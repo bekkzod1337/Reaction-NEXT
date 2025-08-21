@@ -13,7 +13,8 @@ export async function GET() {
   try {
     const data = await fs.readFile(filePath, "utf-8");
     return NextResponse.json(JSON.parse(data));
-  } catch (error) {
+  } catch {
+    // Fayl bo‘lmasa yoki xatolik bo‘lsa — bo‘sh array qaytaramiz
     return NextResponse.json({ scores: [] });
   }
 }
@@ -25,13 +26,17 @@ export async function POST(req: Request) {
   try {
     const data = await fs.readFile(filePath, "utf-8");
     scores = JSON.parse(data).scores || [];
-  } catch (error) {
+  } catch {
     scores = [];
   }
 
   scores.push({ username, score });
 
-  await fs.writeFile(filePath, JSON.stringify({ scores }, null, 2), "utf-8");
+  await fs.writeFile(
+    filePath,
+    JSON.stringify({ scores }, null, 2),
+    "utf-8"
+  );
 
   return NextResponse.json({ success: true, scores });
 }

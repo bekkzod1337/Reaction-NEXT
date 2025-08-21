@@ -2,11 +2,16 @@
 
 import { useState, useEffect, useRef } from "react";
 
+type Score = {
+  username: string;
+  score: number;
+};
+
 export default function ReactionTest() {
   const [status, setStatus] = useState<"waiting" | "ready" | "now" | "result">("waiting");
   const [message, setMessage] = useState("Boshlash uchun bos!");
   const [reactionTime, setReactionTime] = useState<number | null>(null);
-  const [bestScore, setBestScore] = useState<{ username: string; score: number } | null>(null);
+  const [bestScore, setBestScore] = useState<Score | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
 
@@ -34,7 +39,6 @@ export default function ReactionTest() {
 
       const username = localStorage.getItem("username") || "Anonim";
 
-      // natijani serverga yuborish
       fetch("/api/scores", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -51,8 +55,8 @@ export default function ReactionTest() {
     const res = await fetch("/api/scores");
     const data = await res.json();
     if (data.scores && data.scores.length > 0) {
-      const best = data.scores.reduce((prev: any, curr: any) =>
-        curr.score < prev.score ? curr : prev
+      const best = data.scores.reduce(
+        (prev: Score, curr: Score) => (curr.score < prev.score ? curr : prev)
       );
       setBestScore(best);
     }
@@ -84,7 +88,6 @@ export default function ReactionTest() {
         {message}
       </div>
 
-      {/* Eng yaxshi natija */}
       {bestScore && (
         <div className="mt-8 text-xl sm:text-2xl text-white font-medium">
           <p>

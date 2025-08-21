@@ -30,12 +30,13 @@ export default function LoginPage() {
       >
         <h1 className="text-white text-2xl font-bold text-center">Kirish</h1>
         <input
-          type="text"
-          placeholder="Username kiriting"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="p-3 rounded-md outline-none"
-        />
+  type="text"
+  placeholder="Username kiriting"
+  value={username}
+  onChange={(e) => setUsername(e.target.value)}
+  className="p-3 rounded-md outline-none bg-gray-700 text-white placeholder-gray-400"
+/>
+
         <button
           type="submit"
           className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-md font-semibold"
