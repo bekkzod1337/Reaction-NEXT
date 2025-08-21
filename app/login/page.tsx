@@ -10,7 +10,7 @@ export default function LoginPage() {
   useEffect(() => {
     const savedUser = localStorage.getItem("username");
     if (savedUser) {
-      router.push("/"); // agar username bor bo‘lsa, to‘g‘ridan-to‘g‘ri o‘yinga o‘tadi
+      router.push("/");
     }
   }, [router]);
 
@@ -18,7 +18,7 @@ export default function LoginPage() {
     e.preventDefault();
     if (username.trim()) {
       localStorage.setItem("username", username.trim());
-      router.push("/"); // asosiy sahifaga (o‘yin) o‘tadi
+      router.push("/");
     }
   };
 
@@ -30,13 +30,12 @@ export default function LoginPage() {
       >
         <h1 className="text-white text-2xl font-bold text-center">Kirish</h1>
         <input
-  type="text"
-  placeholder="Username kiriting"
-  value={username}
-  onChange={(e) => setUsername(e.target.value)}
-  className="p-3 rounded-md outline-none bg-gray-700 text-white placeholder-gray-400"
-/>
-
+          type="text"
+          placeholder="Username kiriting"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="p-3 rounded-md outline-none"
+        />
         <button
           type="submit"
           className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-md font-semibold"
@@ -47,4 +46,3 @@ export default function LoginPage() {
     </div>
   );
 }
-    

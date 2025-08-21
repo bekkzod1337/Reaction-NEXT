@@ -1,21 +1,36 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { supabase } from "../lib/supabase"; // Adjust the import path as necessary
+import { useRouter } from "next/navigation";
 
 type Score = {
+  id: number;
   username: string;
   score: number;
 };
 
 export default function ReactionTest() {
-  const [status, setStatus] = useState<"waiting" | "ready" | "now" | "result">("waiting");
+  const [status, setStatus] = useState<"waiting" | "ready" | "now" | "result">(
+    "waiting"
+  );
   const [message, setMessage] = useState("Boshlash uchun bos!");
   const [reactionTime, setReactionTime] = useState<number | null>(null);
   const [bestScore, setBestScore] = useState<Score | null>(null);
+
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
+  const router = useRouter();
 
-  const handleClick = () => {
+  // foydalanuvchini tekshirish
+  useEffect(() => {
+    const user = localStorage.getItem("username");
+    if (!user) {
+      router.push("/login");
+    }
+  }, [router]);
+
+  const handleClick = async () => {
     if (status === "waiting") {
       setMessage("Kut...");
       setStatus("ready");
@@ -39,11 +54,17 @@ export default function ReactionTest() {
 
       const username = localStorage.getItem("username") || "Anonim";
 
-      fetch("/api/scores", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, score: reaction }),
-      }).then(() => fetchBestScore());
+      // Supabase ga yozish
+      // Supabase ga yozish
+const { error } = await supabase.from("scores").insert([{ username, score: reaction }]);
+
+if (error) {
+  console.error("Supabase insert error:", error.message);
+} else {
+  console.log("Natija saqlandi:", { username, score: reaction });
+  fetchBestScore();
+}
+
     } else if (status === "result") {
       setReactionTime(null);
       setStatus("waiting");
@@ -52,13 +73,14 @@ export default function ReactionTest() {
   };
 
   const fetchBestScore = async () => {
-    const res = await fetch("/api/scores");
-    const data = await res.json();
-    if (data.scores && data.scores.length > 0) {
-      const best = data.scores.reduce(
-        (prev: Score, curr: Score) => (curr.score < prev.score ? curr : prev)
-      );
-      setBestScore(best);
+    const { data, error } = await supabase
+      .from("scores")
+      .select("*")
+      .order("score", { ascending: true })
+      .limit(1);
+
+    if (!error && data && data.length > 0) {
+      setBestScore(data[0]);
     }
   };
 
